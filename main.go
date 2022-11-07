@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 )
 
 type Employee struct {
@@ -14,7 +15,7 @@ type Employee struct {
 func main() {
 	employee, err := getInformation(1001)
 	if err != nil {
-		// Something is wrong. Do something.
+		log.Fatal("Couldn't find employee information")
 	} else {
 		fmt.Print(employee)
 	}
