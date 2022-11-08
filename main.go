@@ -1,37 +1,42 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
-	"os"
+	"test/store"
 )
 
-type GithubResponse []struct {
-	FullName string `json:"full_name"`
-}
-
-type customWriter struct{}
-
-func (w customWriter) Write(p []byte) (n int, err error) {
-	var resp GithubResponse
-
-	json.Unmarshal(p, &resp)
-	for _, r := range resp {
-		fmt.Println(r.FullName)
-	}
-
-	return len(p), nil
-}
-
 func main() {
-	resp, err := http.Get("https://api.github.com/users/microsoft/repos?page=15&per_page=5")
-	if err != nil {
-		fmt.Println("Error:", err)
-		os.Exit(1)
+	a := store.Account{}
+	var choice, newName string
+
+	fmt.Println("This is Online Store Program...to manage accounts")
+
+	fmt.Println("Input your first name:")
+	fmt.Scan(&a.FirstName)
+	fmt.Println("Input your last name:")
+	fmt.Scan(&a.LastName)
+
+	fmt.Println("Input where you want to change: [first or last]")
+	fmt.Scan(&choice)
+
+	// verifying is updating first or last name...
+	choicePossible := [2]string{"first", "last"}
+	for _, c := range choicePossible {
+		if c == choice {
+			break
+		}
+
+		fmt.Println("You need to choose just one of the possibles: [first or last]")
+		fmt.Scan(&choice)
 	}
 
-	writer := customWriter{}
-	io.Copy(writer, resp.Body)
+	fmt.Println("What will be your new name: [digits]")
+	fmt.Scan(&newName)
+
+	err := a.ChangeName(choice, newName)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Printf("\naccount data: %v ---- %v", a.FirstName, a.LastName)
 }
