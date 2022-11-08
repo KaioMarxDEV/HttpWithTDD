@@ -8,6 +8,13 @@ type Account struct {
 	FirstName, LastName string
 }
 
+// Employee is a custom type used to implements everything of Account
+// and also add more variables and methods like seen below its definition:
+type Employee struct {
+	Account
+	numCred float64
+}
+
 // this method is related to objects whom implements account structure
 // and changes the variables saved in Account by parameters passed
 func (a *Account) ChangeName(newFirst string, newLast string) {
@@ -19,13 +26,6 @@ func (a *Account) ChangeName(newFirst string, newLast string) {
 	}
 
 	fmt.Printf("Name changed to %v %v successfully!\n", a.FirstName, a.LastName)
-}
-
-// Employee is a custom type used to implements everything of Account
-// and also add more variables and methods like seen below its definition:
-type Employee struct {
-	Account
-	numCred float64
 }
 
 // method AddCredits receveis a float and increase the total amount already
@@ -53,6 +53,6 @@ func (e Employee) CheckCredits() float64 {
 // method Stringer formats a string with variable values found in Account implementation
 // to use this method the object needs to be an instance of Account struct
 // Employee is an example of Account struct from embedding structs.
-func (e Account) Stringer() string {
-	return fmt.Sprintf("Your Account data, first Name: %v\tlast Name: %v", e.FirstName, e.LastName)
+func (e Employee) Stringer() string {
+	return fmt.Sprintf("Account data Name: %v %v Credits: %.2f", e.FirstName, e.LastName, e.numCred)
 }
