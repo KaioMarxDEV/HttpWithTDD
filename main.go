@@ -1,35 +1,37 @@
 package main
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"os"
+)
 
-type Shape interface {
-	Area() float64
-	Perimeter() float64
+type GithubResponse []struct {
+	FullName string `json:"full_name"`
 }
 
-type Square struct {
-	size float64
-}
+type customWriter struct{}
 
-func (s Square) Area() float64 {
-	return s.size * s.size
-}
+func (w customWriter) Write(p []byte) (n int, err error) {
+	var resp GithubResponse
 
-func (s Square) Perimeter() float64 {
-	return s.size * 4
-}
+	json.Unmarshal(p, &resp)
+	for _, r := range resp {
+		fmt.Println(r.FullName)
+	}
 
-func printInformation(obj Shape) {
-	fmt.Printf("%T\n", obj)
-	fmt.Println("Area: ", obj.Area())
-	fmt.Println("Perimeter:", obj.Perimeter())
-	fmt.Println()
+	return len(p), nil
 }
 
 func main() {
-	squareImplementation := Square{4}
-	printInformation(squareImplementation)
+	resp, err := http.Get("https://api.github.com/users/microsoft/repos?page=15&per_page=5")
+	if err != nil {
+		fmt.Println("Error:", err)
+		os.Exit(1)
+	}
 
-	var anotherSquare Shape = Square{8}
-	printInformation(anotherSquare)
+	writer := customWriter{}
+	io.Copy(writer, resp.Body)
 }
