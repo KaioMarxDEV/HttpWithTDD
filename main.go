@@ -1,28 +1,25 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
-type IPAddr [4]byte
+type MyError struct {
+	when time.Time
+	what string
+}
 
-// TODO: Add a "String() string" method to IPAddr.
-func (ip IPAddr) String() string {
-	var ipFormatted string
-	for i, v := range ip {
-		if i == len(ip)-1 {
-			ipFormatted += fmt.Sprintf("%v", v)
-			break
-		}
-		ipFormatted += fmt.Sprintf("%v.", v)
-	}
-	return ipFormatted
+func (merr *MyError) Error() string {
+	return fmt.Sprintf("When: %v, What: %v", merr.when, merr.what)
+}
+
+func Run() error {
+	return &MyError{when: time.Now(), what: "It didn't work out"}
 }
 
 func main() {
-	hosts := map[string]IPAddr{
-		"loopback":  {127, 0, 0, 1},
-		"googleDNS": {8, 8, 8, 8},
-	}
-	for name, ip := range hosts {
-		fmt.Printf("%v: %v\n", name, ip)
+	if err := Run(); err != nil {
+		fmt.Println(err)
 	}
 }
