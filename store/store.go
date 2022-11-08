@@ -1,6 +1,9 @@
 package store
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 // Account serves as the first abstraction of an user in real world
 // it is base for using methods seen below like Stringer()
@@ -13,6 +16,10 @@ type Account struct {
 type Employee struct {
 	Account
 	numCred float64
+}
+
+func CreateEmployee(first string, last string, credits float64) (*Employee, error) {
+	return &Employee{Account{first, last}, credits}, nil
 }
 
 // this method is related to objects whom implements account structure
@@ -30,18 +37,24 @@ func (a *Account) ChangeName(newFirst string, newLast string) {
 
 // method AddCredits receveis a float and increase the total amount already
 // saved into numCred variable inside the implementation of the receiver (Employee)
-func (e *Employee) AddCredits(amount float64) float64 {
-	e.numCred += amount
-
-	return e.numCred
+func (e *Employee) AddCredits(amount float64) (float64, error) {
+	if amount > 0.0 {
+		e.numCred += amount
+		return e.numCred, nil
+	}
+	return 0.0, errors.New("invalid credit amount")
 }
 
 // method RemoveCredits receveis a float and decrease the total amount already
 // saved into numCred variable inside the implementation of the receiver (Employee)
-func (e *Employee) RemoveCredits(amount float64) float64 {
-	e.numCred -= amount
-
-	return e.numCred
+func (e *Employee) RemoveCredits(amount float64) (float64, error) {
+	if amount > 0.0 {
+		if amount <= e.numCred {
+			return e.numCred, nil
+		}
+		return 0.0, errors.New("you can't remove more credits than the account has")
+	}
+	return 0.0, errors.New("you can't remove negative numbers")
 }
 
 // method CheckCredits is used to verify the total amount in real time inside

@@ -6,34 +6,22 @@ import (
 )
 
 func main() {
-	newUser := store.Account{FirstName: "john", LastName: "doe"}
-	newEmployee := store.Employee{}
-	var newFirst, newLast string
-	var amountToAdd, amountToRemove float64
+	bruce, _ := store.CreateEmployee("Bruce", "Lee", 500)
+	fmt.Println(bruce.CheckCredits())
 
-	fmt.Println("\n==== WELCOME to STORE. accounts session ====")
-	fmt.Println("The program auto determined a name for your account")
+	credits, err := bruce.AddCredits(250)
+	if err != nil {
+		fmt.Println("Error:", err)
+	} else {
+		fmt.Println("New Credits Balance = ", credits)
+	}
 
-	fmt.Println("To custom it, please digits your first name:")
-	fmt.Scan(&newFirst)
-	fmt.Println("Now the your last name:")
-	fmt.Scan(&newLast)
+	_, err = bruce.RemoveCredits(2500)
+	if err != nil {
+		fmt.Println("Can't withdraw or overdrawn!", err)
+	}
 
-	newUser.ChangeName(newFirst, newLast)
+	bruce.ChangeName("Mark", "Zuck")
 
-	fmt.Println("==== WELCOME to STORE. Employee session ====")
-	fmt.Println("Here you can Increase, Decrease and Check your credits")
-
-	fmt.Println("Please digit how much you want to add:")
-	fmt.Scan(&amountToAdd)
-	newEmployee.AddCredits(amountToAdd)
-
-	fmt.Printf("\nYour Amount now is %.2f\n", newEmployee.CheckCredits())
-
-	fmt.Println("Please digit how much you want to REMOVE:")
-	fmt.Scan(&amountToRemove)
-	newEmployee.RemoveCredits(amountToRemove)
-
-	fmt.Printf("\nYour Amount now is %.2f\n", newEmployee.CheckCredits())
-	fmt.Println("Progam is now finished...")
+	fmt.Println(bruce)
 }
