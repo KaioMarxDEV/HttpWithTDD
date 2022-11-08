@@ -5,20 +5,20 @@ import "fmt"
 // Account serves as the first abstraction of an user in real world
 // it is base for using methods seen below like Stringer()
 type Account struct {
-	firstName, lastName string
+	FirstName, LastName string
 }
 
 // this method is related to objects whom implements account structure
 // and changes the variables saved in Account by parameters passed
 func (a *Account) ChangeName(newFirst string, newLast string) {
 	if newFirst != "" {
-		a.firstName = newFirst
+		a.FirstName = newFirst
 	}
 	if newLast != "" {
-		a.lastName = newLast
+		a.LastName = newLast
 	}
 
-	fmt.Println("Name changed successfully!")
+	fmt.Printf("Name changed to %v %v successfully!\n", a.FirstName, a.LastName)
 }
 
 // Employee is a custom type used to implements everything of Account
@@ -54,5 +54,5 @@ func (e Employee) CheckCredits() float64 {
 // to use this method the object needs to be an instance of Account struct
 // Employee is an example of Account struct from embedding structs.
 func (e Account) Stringer() string {
-	return fmt.Sprintf("Your Account data, first Name: %v\tlast Name: %v", e.firstName, e.lastName)
+	return fmt.Sprintf("Your Account data, first Name: %v\tlast Name: %v", e.FirstName, e.LastName)
 }
