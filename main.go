@@ -1,27 +1,28 @@
 package main
 
-import (
-	"fmt"
-	"test/store"
-)
+import "fmt"
+
+type IPAddr [4]byte
+
+// TODO: Add a "String() string" method to IPAddr.
+func (ip IPAddr) String() string {
+	var ipFormatted string
+	for i, v := range ip {
+		if i == len(ip)-1 {
+			ipFormatted += fmt.Sprintf("%v", v)
+			break
+		}
+		ipFormatted += fmt.Sprintf("%v.", v)
+	}
+	return ipFormatted
+}
 
 func main() {
-	bruce, _ := store.CreateEmployee("Bruce", "Lee", 500)
-	fmt.Println(bruce.CheckCredits())
-
-	credits, err := bruce.AddCredits(250)
-	if err != nil {
-		fmt.Println("Error:", err)
-	} else {
-		fmt.Println("New Credits Balance = ", credits)
+	hosts := map[string]IPAddr{
+		"loopback":  {127, 0, 0, 1},
+		"googleDNS": {8, 8, 8, 8},
 	}
-
-	_, err = bruce.RemoveCredits(2500)
-	if err != nil {
-		fmt.Println("Can't withdraw or overdrawn!", err)
+	for name, ip := range hosts {
+		fmt.Printf("%v: %v\n", name, ip)
 	}
-
-	bruce.ChangeName("Mark", "Zuck")
-
-	fmt.Println(bruce)
 }
