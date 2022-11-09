@@ -2,20 +2,21 @@ package main
 
 import "fmt"
 
-func Index[T comparable](s []T, x T) int {
-	for i, v := range s {
-		if v == x {
-			// return x position inside of s when s[i] or v are equal to x
-			return i
-		}
+func sum(s []int, c chan int) {
+	sum := 0
+	for _, v := range s {
+		sum += v
 	}
-	return -1
+	c <- sum
 }
 
 func main() {
-	sliceInts := []int{10, 20, 14, -2}
-	fmt.Println(Index(sliceInts, 20))
+	nums := []int{7, 2, 8, -9, 4}
 
-	sliceStrings := []string{"hello", "world", "test", "kaio"}
-	fmt.Println(Index(sliceStrings, "test"))
+	c := make(chan int)
+	go sum(nums[:len(nums)/2], c)
+	go sum(nums[len(nums)/2:], c)
+
+	x, y := <-c, <-c
+	fmt.Printf("\nx:%v\ty:%v\tTOTAL: %d", x, y, x+y)
 }
