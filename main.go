@@ -4,32 +4,19 @@ import (
 	"image"
 	"image/png"
 	"log"
-	"math/rand"
 	"os"
 )
 
 func main() {
-	rect := image.Rect(0, 0, 100, 100)
-	img := createRandom(rect)
-	save("./newPhoto.png", img)
-}
+	myImg := image.NewRGBA(image.Rect(0, 0, 400, 200))
 
-func save(filePath string, img *image.NRGBA) {
-	imgFile, err := os.Create(filePath)
+	out, err := os.Create("new.png")
 	if err != nil {
-		log.Println("cannot save file")
+		log.Fatal("failed creating new.png file")
 	}
-	png.Encode(imgFile, img.SubImage(img.Rect))
-	imgFile.Close()
-}
-
-func createRandom(rect image.Rectangle) (created *image.NRGBA) {
-	pix := make([]byte, rect.Dx()*rect.Dy()*4)
-	rand.Read(pix)
-	created = &image.NRGBA{
-		Pix:    pix,
-		Stride: rect.Dx() * 4,
-		Rect:   rect,
+	defer out.Close()
+	err = png.Encode(out, myImg)
+	if err != nil {
+		log.Fatal("failed to encode the file")
 	}
-	return
 }
