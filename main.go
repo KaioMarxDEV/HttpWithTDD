@@ -1,22 +1,21 @@
 package main
 
-import (
-	"image"
-	"image/png"
-	"log"
-	"os"
-)
+import "fmt"
+
+func Index[T comparable](s []T, x T) int {
+	for i, v := range s {
+		if v == x {
+			// return x position inside of s when s[i] or v are equal to x
+			return i
+		}
+	}
+	return -1
+}
 
 func main() {
-	myImg := image.NewRGBA(image.Rect(0, 0, 400, 200))
+	sliceInts := []int{10, 20, 14, -2}
+	fmt.Println(Index(sliceInts, 20))
 
-	out, err := os.Create("new.png")
-	if err != nil {
-		log.Fatal("failed creating new.png file")
-	}
-	defer out.Close()
-	err = png.Encode(out, myImg)
-	if err != nil {
-		log.Fatal("failed to encode the file")
-	}
+	sliceStrings := []string{"hello", "world", "test", "kaio"}
+	fmt.Println(Index(sliceStrings, "test"))
 }
