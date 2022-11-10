@@ -1,22 +1,42 @@
 package main
 
-import "fmt"
-
-func sum(s []int, c chan int) {
-	sum := 0
-	for _, v := range s {
-		sum += v
-	}
-	c <- sum
-}
+import (
+	"fmt"
+	"net/http"
+	"time"
+)
 
 func main() {
-	nums := []int{7, 2, 8, -9, 4}
+	start := time.Now()
 
-	c := make(chan int)
-	go sum(nums[:len(nums)/2], c)
-	go sum(nums[len(nums)/2:], c)
+	apis := []string{
+		"https://management.azure.com",
+		"https://dev.azure.com",
+		"https://api.github.com",
+		"https://outlook.office.com/",
+		"https://api.somewhereintheinternet.com/",
+		"https://graph.microsoft.com",
+	}
 
-	x, y := <-c, <-c
-	fmt.Printf("\nx:%v\ty:%v\tTOTAL: %d", x, y, x+y)
+	ch := make(chan string, len(apis))
+
+	for _, api := range apis {
+		go checkAPI(api, ch)
+	}
+
+	for i := 0; i < len(apis); i++ {
+		fmt.Print(<-ch)
+	}
+	elapsed := time.Since(start)
+	fmt.Printf("It took %v", elapsed.Abs().Seconds())
+}
+
+func checkAPI(api string, ch chan string) {
+	_, err := http.Get(api)
+	if err != nil {
+		ch <- fmt.Sprintf("ERROR: %s is down!\n", api)
+		return
+	}
+
+	ch <- fmt.Sprintf("SUCCESS: %s is up and running!\n", api)
 }
