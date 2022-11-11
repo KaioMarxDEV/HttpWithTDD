@@ -2,41 +2,45 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"time"
 )
+
+var quit = make(chan bool)
+
+func fib(c chan int) {
+	x, y := 1, 1
+
+	for {
+		select {
+		case c <- x:
+			x, y = y, x+y
+		case <-quit:
+			fmt.Println("Done calculating Fibonacci!")
+			return
+		}
+	}
+}
 
 func main() {
 	start := time.Now()
 
-	apis := []string{
-		"https://management.azure.com",
-		"https://dev.azure.com",
-		"https://api.github.com",
-		"https://outlook.office.com/",
-		"https://api.somewhereintheinternet.com/",
-		"https://graph.microsoft.com",
+	command := ""
+	data := make(chan int)
+
+	go fib(data)
+
+	for {
+		num := <-data
+		fmt.Println(num)
+		fmt.Scanf("%s", &command)
+		if command == "quit" {
+			quit <- true
+			break
+		}
 	}
 
-	ch := make(chan string, len(apis))
+	time.Sleep(1 * time.Second)
 
-	for _, api := range apis {
-		go checkAPI(api, ch)
-	}
-
-	for i := 0; i < len(apis); i++ {
-		fmt.Print(<-ch)
-	}
 	elapsed := time.Since(start)
-	fmt.Printf("It took %v", elapsed.Abs().Seconds())
-}
-
-func checkAPI(api string, ch chan string) {
-	_, err := http.Get(api)
-	if err != nil {
-		ch <- fmt.Sprintf("ERROR: %s is down!\n", api)
-		return
-	}
-
-	ch <- fmt.Sprintf("SUCCESS: %s is up and running!\n", api)
+	fmt.Printf("Done! It took %v seconds!\n", elapsed.Seconds())
 }
