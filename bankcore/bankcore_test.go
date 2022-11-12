@@ -1,6 +1,9 @@
 package bankcore
 
-import "testing"
+import (
+	"encoding/json"
+	"testing"
+)
 
 func TestAccount(t *testing.T) {
 	account := Account{
@@ -100,9 +103,9 @@ func TestStatement(t *testing.T) {
 		Balance: 0,
 	}
 
-	statement := account.Statement()
+	statement, _ := account.Statement()
 
-	if statement != "1001 - John - 0" {
+	if !json.Valid(statement) {
 		t.Error("statement format is invalid")
 	}
 }
